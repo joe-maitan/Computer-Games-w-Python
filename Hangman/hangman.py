@@ -1,4 +1,5 @@
 import random
+import sys
 
 LIST_OF_EASY_WORDS = ["apple", "chair", "house", "river", "banana", "guitar", "pencil", "mountain",
     "orange", "computer", "sun", "tree", "cat", "dog", "car", "book", 
@@ -10,43 +11,43 @@ LIST_OF_HARD_WORDS = ["quartz", "xylophone", "zephyr", "awkward", "mnemonic", "c
     "eccentric", "mischievous", "yacht", "rhythm"]
 
 HANGMAN_BOARDS = ['''
-+---+
-    |
-    |
-    |
-   ===''', '''
-+---+
-O   |
-    |
-    |
-   ===''', '''
-+---+
-O   |
-|   |
-    |
-   ===''', '''
+ +---+
+     |
+     |
+     |
+    ===''', '''
+ +---+
+ O   |
+     |
+     |
+    ===''', '''
+ +---+
+ O   |
+ |   |
+     |
+    ===''', '''
  +---+
  O   |
 /|   |
      |
     ===''',
    '''
-+---+
-O   |
-|\  |
-    |
-   ===''',
-   '''
-+---+
-    |
-    |
-    |
-   ===''',
+ +---+
+ O   |
+/|\  |
+     |
+    ===''',
    '''
  +---+
  O   |
 /|\  |
- /\  |
+/    |
+    ===''',
+   '''
+ +---+
+ O   |
+/|\  |
+/ \  |
     ===''']
 
 
@@ -55,17 +56,6 @@ def displayIntro():
     print("\tH A N G M A N\t")
     print()
 
-
-def createWordBlanks(wordToGuess):
-    temp = ""
-    for i in range(0, len(wordToGuess)):
-        if i + 1 == len(wordToGuess):
-            temp += '_'
-        else:
-            temp += '_ '
-    
-    return temp
-   
 
 def askUser(word):
     # Ask user for a letter in the word
@@ -82,47 +72,45 @@ def validateGuess(word, char):
         return False
 
 
-def fillInBlank(blankWordString):
-    print(len(blankWordString))
-    # for i in range(0, len(word)):
-    #     if word[i] == char:
-    #         blankWordString[i] = char
-
 
 def startGame():
     gameIsRunning = True
-    numGuesses = 0 # max number of guesses can only be 6 because there are only 
+    
+    numChances = 6
+    
+    missedLetters = []  # List of letters guessed that were incorrect
+    correctLetters = [] # List of letters guessed that were correct
 
     wordToGuess = random.choice(LIST_OF_EASY_WORDS) # Select a word
     
     while gameIsRunning == True:
-        userBoard = HANGMAN_BOARDS[numGuesses]
-        wordBlanks = ['_' for i in range(len(wordToGuess))]
-        # wordBlanks = createWordBlanks(wordToGuess)
-        
+        if len(missedLetters) == numChances:
+            print("GameOver!")
+            sys.exit()
+
+        userBoard = HANGMAN_BOARDS[len(missedLetters)]
+        wordBlanks = '_' * len(wordToGuess)
+
         print(userBoard)
         print(wordBlanks)
 
         userGuess = askUser(wordToGuess)
+
         if validateGuess(wordToGuess, userGuess) == True: # Player got the guess right, fill in the correct blank
-            print("DEBUG STATEMENT LINE 108: Valid Guess.")
-            # fillInBlank(wordBlanks, wordToGuess, userGuess) # Update the wordBlanks string to display the correct information 
+            print("VALID GUESS")
+            correctLetters.append(userGuess)
         else: # player got the guess wrong, add to the hangman board
-            print("DEBUG STATEMENT LINE 108: Invalid Guess.")
-            numGuesses += 1
+            print("INVALID GUESS")
+            if userGuess in missedLetters:
+                print(f"You already guessed {userGuess}. Try again.")
+            else:
+                missedLetters.append(userGuess)
             
-            if numGuesses == 6:
-                break
-        
-
-        
-
+            
+            
 # displayIntro()
 # while True:
-# startGame()
+startGame()
 
 # temp = createWordBlanks("Joe")
 # fillInBlank(temp)
-
-for i in range(0, len(HANGMAN_BOARDS)):
-    print(HANGMAN_BOARDS[i])
